@@ -37,13 +37,17 @@ public static class HexConvert
     public static bool TryParseHexString(string? hex, out byte[]? bytes)
     {
         bytes = null;
+#if NET35
+        if (StringUtils.IsNullOrWhiteSpace(hex))
+#else
         if (string.IsNullOrWhiteSpace(hex))
+#endif
         {
             bytes = [];
             return true;
         }
 
-        string s = hex.Trim();
+        string s = hex!.Trim();
         var cleaned = new StringBuilder(s.Length);
         for (int i = 0; i < s.Length; i++)
         {
@@ -98,3 +102,22 @@ public static class HexConvert
         return -1;
     }
 }
+
+#if NET35
+file static class StringUtils
+{
+    public static bool IsNullOrWhiteSpace(string? value)
+    {
+        if (value == null)
+            return true;
+
+        for (int i = 0; i < value.Length; i++)
+        {
+            if (!char.IsWhiteSpace(value[i]))
+                return false;
+        }
+
+        return true;
+    }
+}
+#endif
