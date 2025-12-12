@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/HexConvert/HexConvert.csproj" />
+  <Project Path="tests/HexConvert.Tests/HexConvert.Tests.csproj" />
+</Solution>
