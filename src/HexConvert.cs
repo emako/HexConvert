@@ -13,30 +13,40 @@ namespace System;
 /// </summary>
 public static class HexConvert
 {
-    public static string ToHexString(byte[] bytes, bool uppercase = false, string? separator = null, string? prefixPerByte = null)
+    public static string ToHexString(this byte[] bytes, bool uppercase = false, string? separator = null, string? prefixPerByte = null)
     {
-        if (bytes is null) throw new ArgumentNullException(nameof(bytes));
-        var sb = new StringBuilder(bytes.Length * (2 + (separator?.Length ?? 0) + (prefixPerByte?.Length ?? 0)));
-        var format = uppercase ? "X2" : "x2";
+        if (bytes is null)
+            throw new ArgumentNullException(nameof(bytes));
+
+        StringBuilder sb = new(bytes.Length * (2 + (separator?.Length ?? 0) + (prefixPerByte?.Length ?? 0)));
+        string format = uppercase ? "X2" : "x2";
+
         for (int i = 0; i < bytes.Length; i++)
         {
-            if (i > 0 && !string.IsNullOrEmpty(separator)) sb.Append(separator);
-            if (!string.IsNullOrEmpty(prefixPerByte)) sb.Append(prefixPerByte);
+            if (i > 0 && !string.IsNullOrEmpty(separator))
+                sb.Append(separator);
+
+            if (!string.IsNullOrEmpty(prefixPerByte))
+                sb.Append(prefixPerByte);
+
             sb.Append(bytes[i].ToString(format, CultureInfo.InvariantCulture));
         }
+
         return sb.ToString();
     }
 
-    public static byte[] FromHexString(string hex)
+    public static byte[] ToBytes(this string hex)
     {
-        if (!TryParseHexString(hex, out var bytes))
+        if (!TryParse(hex, out byte[]? bytes))
             throw new FormatException("Input string is not a valid hexadecimal representation.");
+
         return bytes!;
     }
 
-    public static bool TryParseHexString(string? hex, out byte[]? bytes)
+    public static bool TryParse(string? hex, out byte[]? bytes)
     {
         bytes = null;
+
 #if NET35
         if (StringUtils.IsNullOrWhiteSpace(hex))
 #else
@@ -48,23 +58,31 @@ public static class HexConvert
         }
 
         string s = hex!.Trim();
-        var cleaned = new StringBuilder(s.Length);
+        StringBuilder cleaned = new(s.Length);
+
         for (int i = 0; i < s.Length; i++)
         {
             char c = s[i];
-            if (char.IsWhiteSpace(c) || c == '-' || c == ':' || c == ',') continue;
+
+            if (char.IsWhiteSpace(c) || c == '-' || c == ':' || c == ',')
+                continue;
+
             // skip leading 0x/0X sequences
             if (c == '0' && i + 1 < s.Length && (s[i + 1] == 'x' || s[i + 1] == 'X'))
             {
                 i++; // skip the 'x'
                 continue;
             }
-            if (c == 'x' || c == 'X') continue;
+
+            if (c == 'x' || c == 'X')
+                continue;
+
             if (FromHexChar(c) < 0)
             {
                 bytes = null;
                 return false;
             }
+
             cleaned.Append(c);
         }
 
@@ -74,14 +92,17 @@ public static class HexConvert
             return true;
         }
 
-        if ((cleaned.Length & 1) != 0) cleaned.Insert(0, '0');
+        if ((cleaned.Length & 1) != 0)
+            cleaned.Insert(0, '0');
 
         int len = cleaned.Length / 2;
-        var result = new byte[len];
+        byte[] result = new byte[len];
+
         for (int i = 0; i < len; i++)
         {
             int hi = FromHexChar(cleaned[2 * i]);
             int lo = FromHexChar(cleaned[2 * i + 1]);
+
             if (hi < 0 || lo < 0)
             {
                 bytes = null;
