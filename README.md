@@ -36,3 +36,7 @@ dotnet test
 ## 许可
 
 MIT
+
+## References
+
+https://github.com/faustodavid/HexConverter
