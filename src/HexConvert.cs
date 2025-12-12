@@ -1,17 +1,13 @@
 using System.Globalization;
 using System.Text;
 
-#pragma warning disable IDE0130 // Namespace does not match folder structure
-
 namespace System;
-
-#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 /// Utility helpers for converting between byte arrays and hexadecimal strings.
 /// Supports optional separators and tolerant parsing (ignores whitespace and 0x prefixes).
 /// </summary>
-public static class HexConvert
+public static partial class HexConvert
 {
     public static string ToHexString(this byte[] bytes, bool uppercase = false, string? separator = null, string? prefixPerByte = null)
     {
