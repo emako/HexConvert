@@ -1,3 +1,5 @@
+[![GitHub license](https://img.shields.io/github/license/emako/HexConvert)](https://github.com/emako/HexConvert/blob/master/LICENSE) [![NuGet](https://img.shields.io/nuget/v/HexConvert.svg)](https://nuget.org/packages/HexConvert) [![Actions](https://github.com/emako/HexConvert/actions/workflows/library.nuget.yml/badge.svg)](https://github.com/emako/HexConvert/actions/workflows/library.nuget.yml)
+
 # HexConvert
 
 Lightweight C# hexadecimal conversion library. This repository contains a small, multi-targeted implementation of helpers to convert between byte arrays and hexadecimal strings with several API flavors: simple string APIs, `StringBuilder` extension helpers, high-performance `Span`-based APIs and Trace/Debug helpers. The library is implemented in the `System` namespace and exposes a static `HexConvert` helper.
