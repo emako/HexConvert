@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 [SuppressMessage("Design", "CA1050:Declare types in namespaces")]
@@ -113,4 +114,68 @@ public sealed class HexConverterTests
 
         Assert.Equal(expected + Environment.NewLine, sw.ToString());
     }
+
+    [Fact]
+    public void WriteHex_Writes_Utf8_Hex_Text()
+    {
+        byte[] data = [0x01, 0xAF, 0x00];
+        string expected = data.ToHexString(uppercase: true, separator: " ", prefixPerByte: "0x");
+
+        using var ms = new MemoryStream();
+        ms.WriteHex(data, uppercase: true, separator: " ", prefixPerByte: "0x");
+        ms.Position = 0;
+
+        using var sr = new StreamReader(ms, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, leaveOpen: true);
+        string actual = sr.ReadToEnd();
+
+        Assert.Equal(expected, actual);
+    }
+
+#if !NET35 && !NET40
+
+    [Fact]
+    public async Task WriteHexAsync_Writes_Utf8_Hex_Text()
+    {
+        byte[] data = [0xDE, 0xAD, 0xBE, 0xEF];
+        string expected = data.ToHexString();
+
+        using var ms = new MemoryStream();
+        await ms.WriteHexAsync(data).ConfigureAwait(false);
+        ms.Position = 0;
+
+        using var sr = new StreamReader(ms, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, leaveOpen: true);
+        string actual = await sr.ReadToEndAsync().ConfigureAwait(false);
+
+        Assert.Equal(expected, actual);
+    }
+
+#endif
+
+    [Fact]
+    public void ReadHex_Reads_Utf8_Hex_Text()
+    {
+        byte[] expected = [0x0A, 0x0B, 0x0C];
+        string hex = expected.ToHexString();
+
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(hex));
+        byte[] actual = ms.ReadHex();
+
+        Assert.Equal(expected, actual);
+    }
+
+#if !NET35 && !NET40
+
+    [Fact]
+    public async Task ReadHexAsync_Reads_Utf8_Hex_Text()
+    {
+        byte[] expected = [0x10, 0x20, 0x30];
+        string hex = expected.ToHexString();
+
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(hex));
+        byte[] actual = await ms.ReadHexAsync().ConfigureAwait(false);
+
+        Assert.Equal(expected, actual);
+    }
+
+#endif
 }
