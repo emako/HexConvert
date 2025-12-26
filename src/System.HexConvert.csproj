@@ -32,7 +32,7 @@
 
   <ItemGroup>
     <None Include="..\README.md" Pack="true" PackagePath=""/>
-    <None Include="..\logo.png" Pack="true" PackagePath=""/>
+    <None Include="..\branding\logo.png" Pack="true" PackagePath=""/>
   </ItemGroup>
 
   <ItemGroup Condition="!$(TargetFramework.StartsWith('net35')) AND !$(TargetFramework.StartsWith('net40')) AND '$(TargetFramework)' != 'netstandard1.0'">
