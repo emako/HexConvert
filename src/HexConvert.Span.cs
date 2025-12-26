@@ -137,7 +137,6 @@ public static partial class HexConvert
 
     /// <summary>
     /// Get hexadecimal chars from bytes source using ArrayPool to avoid allocations.
-
     /// </summary>
     /// <param name="source"></param>
     /// <returns>Chars on a disposable wrapper to return to array to the pool when dispose</returns>
