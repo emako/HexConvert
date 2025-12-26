@@ -40,8 +40,8 @@ public static partial class HexConvert
     /// <param name="source"></param>
     /// <param name="buffer"></param>
     /// <returns></returns>
-    /// <exception cref="Exception"></exception>
-    /// <exception cref="HexConverterBufferCapacityException">HexConverterInvalidSourceLengthException</exception>
+    /// <exception cref="Exception">HexConverterInvalidSourceLengthException</exception>
+    /// <exception cref="Exception">HexConverterBufferCapacityException</exception>
     public static int GetBytes(ReadOnlySpan<char> source, Span<byte> buffer)
     {
         if (source.Length % 2 != 0) throw new Exception("HexConverterInvalidSourceLengthException");
