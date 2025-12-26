@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Text;
 using Xunit;
 
@@ -56,7 +58,59 @@ public sealed class HexConverterTests
     public void AppendHex_Single_Byte_Works_With_Prefix_And_Case()
     {
         StringBuilder sb = new();
-        sb.AppendHex((byte)0x5C, uppercase: true, prefix: "0x");
+        sb.AppendHex(0x5C, uppercase: true, prefix: "0x");
         Assert.Equal("0x5C", sb.ToString());
+    }
+
+    [Fact]
+    public void TextWriter_WriteHex_Writes_Correct()
+    {
+        byte[] data = [0xDE, 0xAD, 0xBE, 0xEF];
+        string expected = data.ToHexString();
+
+        using StringWriter sw = new();
+        sw.WriteHex(data, uppercase: false, separator: null, prefixPerByte: null);
+
+        Assert.Equal(expected, sw.ToString());
+    }
+
+    [Fact]
+    public void TextWriter_WriteHexLine_Writes_Correct()
+    {
+        byte[] data = [0x0A, 0x0B];
+        string expected = data.ToHexString();
+
+        using StringWriter sw = new();
+        sw.WriteHexLine(data, uppercase: false, separator: null, prefixPerByte: null);
+
+        Assert.Equal(expected + Environment.NewLine, sw.ToString());
+    }
+
+    [Fact]
+    public void TraceListener_WriteHex_Writes_Correct()
+    {
+        byte[] data = [0x01, 0x02, 0x03];
+        string expected = data.ToHexString(uppercase: true, separator: " ", prefixPerByte: "0x");
+
+        using StringWriter sw = new();
+        var listener = new TextWriterTraceListener(sw);
+        listener.WriteHex(data, uppercase: true, separator: " ", prefixPerByte: "0x");
+        listener.Flush();
+
+        Assert.Equal(expected, sw.ToString());
+    }
+
+    [Fact]
+    public void TraceListener_WriteHexLine_Writes_Correct()
+    {
+        byte[] data = [0xFF];
+        string expected = data.ToHexString();
+
+        using StringWriter sw = new();
+        var listener = new TextWriterTraceListener(sw);
+        listener.WriteHexLine(data, uppercase: false, separator: null, prefixPerByte: null);
+        listener.Flush();
+
+        Assert.Equal(expected + Environment.NewLine, sw.ToString());
     }
 }
