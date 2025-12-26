@@ -5,9 +5,9 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>HexConvert</PackageId>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <FileVersion>1.0.1</FileVersion>
-    <Version>$(VersionPrefix)1.0.1</Version>
+    <AssemblyVersion>1.0.2</AssemblyVersion>
+    <FileVersion>1.0.2</FileVersion>
+    <Version>$(VersionPrefix)1.0.2</Version>
     <Authors>ema</Authors>
     <Description>High-performance hexadecimal converter</Description>
     <PackageProjectUrl>https://github.com/emako/HexConvert</PackageProjectUrl>
