@@ -8,6 +8,7 @@ Lightweight C# hexadecimal conversion library. This repository contains a small,
 - `src/HexConvert.StringBuilder.cs` - `StringBuilder` extension methods: `AppendHex` (byte, byte[], `ReadOnlySpan<byte>` on supported platforms)
 - `src/HexConvert.Span.cs` - high-performance `Span`-based APIs: `GetString`, `GetChars`, `GetBytes`, pooled helpers and buffer-aware overloads
 - `src/HexConvert.TraceListener.cs` - helpers for writing hex output to `TraceListener` (`WriteHex`, `WriteHexLine`)
+- `src/HexConvert.Stream.cs` - stream helpers for reading/writing hex text (`WriteHex`, `WriteHexAsync`, `ReadHex`, `ReadHexAsync`)
 - `tests/` - unit tests (`System.HexConvert.Tests`)
 
 ## Namespace and public types
@@ -20,6 +21,7 @@ Lightweight C# hexadecimal conversion library. This repository contains a small,
   - `StringBuilder.AppendHex(...)` overloads for single `byte`, `byte[]`, and `ReadOnlySpan<byte>` (when supported)
   - `GetString(ReadOnlySpan<byte>)`, `GetChars(ReadOnlySpan<byte>, Span<char>)`, `GetBytes(ReadOnlySpan<char>, Span<byte>)`, and pooled variants (returning a `RentedArraySegmentWrapper<T>`)
   - `TraceListener.WriteHex(...)` and `TraceListener.WriteHexLine(...)` overloads for `byte[]` and `ReadOnlySpan<byte>` (when supported)
+  - `Stream` helpers: `WriteHex(Stream, byte[])`, `WriteHexAsync(Stream, byte[])`, `ReadHex(Stream)`, `ReadHexAsync(Stream)` — operate on UTF-8 text and use existing conversion APIs
   - `RentedArraySegmentWrapper<T>`: a small readonly struct that wraps a rented array segment and returns the array to the pool on `Dispose()`
 
 ## Behavior and features
@@ -34,6 +36,7 @@ Lightweight C# hexadecimal conversion library. This repository contains a small,
   - Optional separator string between bytes (e.g. space or dash)
   - Optional per-byte prefix (e.g. `"0x"`)
 - High-performance span APIs avoid allocations and offer buffer-aware overloads; pooled helpers use `ArrayPool<T>` to minimize allocations
+- Stream helpers read/write UTF-8 text and delegate parsing/formatting to the existing APIs. Async methods are provided where supported. Stream readers/writers use `leaveOpen: true` on platforms that support the parameter to avoid closing the underlying stream.
 
 ## Examples
 
@@ -85,6 +88,24 @@ Trace listener helpers
 ```csharp
 var listener = new System.Diagnostics.ConsoleTraceListener();
 listener.WriteHex(new byte[] { 1, 2, 3 }, uppercase: true, separator: " ", prefixPerByte: "0x");
+```
+
+Stream helpers
+
+```csharp
+// Write to a MemoryStream (synchronous)
+using var ms = new MemoryStream();
+byte[] data = { 0x01, 0x02 };
+ms.WriteHex(data, uppercase: true, separator: " ", prefixPerByte: "0x");
+ms.Position = 0;
+using var sr = new StreamReader(ms, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, leaveOpen: true);
+string text = sr.ReadToEnd(); // "0x01 0x02"
+
+// Read from a stream
+using var input = new MemoryStream(Encoding.UTF8.GetBytes("0x0A0B"));
+byte[] parsed = input.ReadHex(); // { 0x0A, 0x0B }
+
+// Async variants are available on supported platforms: WriteHexAsync / ReadHexAsync
 ```
 
 ## Supported target frameworks
