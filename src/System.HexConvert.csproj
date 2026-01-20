@@ -38,4 +38,4 @@
   <ItemGroup Condition="!$(TargetFramework.StartsWith('net35')) AND !$(TargetFramework.StartsWith('net40')) AND '$(TargetFramework)' != 'netstandard1.0'">
     <PackageReference Include="System.Memory" Version="4.5.4"/>
   </ItemGroup>
-</Project> 
+</Project>
